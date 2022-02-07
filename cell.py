@@ -38,8 +38,7 @@ class Cell:
             self.calculate_neighbors_pos(x - 1, y)  # 8
         ]
 
-        for row in grid:
-            for cell in row:
+        for cell in grid:
                 if cell.pos in neighbours_coords:
                     self.neighbours.append(cell)
 

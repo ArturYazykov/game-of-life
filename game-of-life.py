@@ -1,9 +1,17 @@
 import random
+from enum import Enum
+
 import pygame
 from pygame.locals import *
 from cell import Cell
 from utils import _time
 from pprint import pprint as pp
+
+
+class MouseBTnState(Enum):
+    LEFT_BTN = 1
+    RIGHT_BTN = 3
+    NOTHING = 0
 
 
 class GameOfLife:
@@ -19,7 +27,7 @@ class GameOfLife:
         self.cell_height = self.height // self.cell_size
 
         self.speed = speed
-        self.mouse_down = False
+        self.mouse_state = MouseBTnState.NOTHING
         self.pause = False
 
     def draw_lines(self) -> None:
@@ -50,9 +58,9 @@ class GameOfLife:
                 elif event.type == pygame.MOUSEMOTION:
                     self.check_mouse_motion_event(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    self.check_mouse_button_event(True)
+                    self.check_mouse_button_event(event.button)
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    self.check_mouse_button_event(False)
+                    self.check_mouse_button_event(MouseBTnState.NOTHING)
 
             self.draw_grid()
             self.draw_lines()
@@ -65,13 +73,13 @@ class GameOfLife:
         pygame.quit()
 
     def check_mouse_motion_event(self, event):
-        if self.mouse_down:
+        if self.mouse_state != MouseBTnState.NOTHING:
             mouse_pos = event.pos
             self._check_cell_focus(mouse_pos)
 
-    def check_mouse_button_event(self, down):
-        self.mouse_down = down
-        if self.mouse_down:
+    def check_mouse_button_event(self, state):
+        self.mouse_state = state
+        if self.mouse_state != MouseBTnState.NOTHING:
             mouse_pos = pygame.mouse.get_pos()
             self._check_cell_focus(mouse_pos)
 
@@ -81,6 +89,10 @@ class GameOfLife:
         y = mouse_pos[1] // self.cell_size
         cell: Cell = grid[y][x]
         cell.val = 1
+        if self.mouse_state == MouseBTnState.LEFT_BTN.value:
+            cell.val = 1
+        if self.mouse_state == MouseBTnState.RIGHT_BTN.value:
+            cell.val = 0
         print(y, x)
 
     # 13.806975

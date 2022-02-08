@@ -12,7 +12,7 @@ class Cell:
         self.pos = (x, y)
         self.neighbours = []
 
-    def calculate_neighbors_pos(self, x: int, y: int) -> tuple:
+    def get_neighbors(self, x: int, y: int, grid: list):
         if x < 0:
             x = self.w - 1
         if x > self.w - 1:
@@ -23,24 +23,20 @@ class Cell:
         if y > self.h - 1:
             y = 0
 
-        return x, y
+        return grid[y][x]
 
     def find_neighbours(self, grid: list):
         x, y = self.x, self.y
-        neighbours_coords = [
-            self.calculate_neighbors_pos(x - 1, y - 1),  # 1
-            self.calculate_neighbors_pos(x, y - 1),  # 2
-            self.calculate_neighbors_pos(x + 1, y - 1),  # 3
-            self.calculate_neighbors_pos(x + 1, y),  # 4
-            self.calculate_neighbors_pos(x + 1, y + 1),  # 5
-            self.calculate_neighbors_pos(x, y + 1),  # 6
-            self.calculate_neighbors_pos(x - 1, y + 1),  # 7
-            self.calculate_neighbors_pos(x - 1, y)  # 8
+        self.neighbours = [
+            self.get_neighbors(x - 1, y - 1, grid),  # 1
+            self.get_neighbors(x, y - 1, grid),  # 2
+            self.get_neighbors(x + 1, y - 1, grid),  # 3
+            self.get_neighbors(x + 1, y, grid),  # 4
+            self.get_neighbors(x + 1, y + 1, grid),  # 5
+            self.get_neighbors(x, y + 1, grid),  # 6
+            self.get_neighbors(x - 1, y + 1, grid),  # 7
+            self.get_neighbors(x - 1, y, grid)  # 8
         ]
-        for row in grid:
-            for cell in row:
-                if cell.pos in neighbours_coords:
-                    self.neighbours.append(cell)
 
     def count_live_neighbors(self) -> int:
         count = 0

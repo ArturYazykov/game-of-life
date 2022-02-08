@@ -137,7 +137,7 @@ if __name__ == '__main__':
     # Seed: 1001
     seed = random.randint(0, 100)
     random.seed(seed)
-    game = GameOfLife(320, 240, 40, 10)
+    game = GameOfLife(1280, 740, 20, 10)
     grid = game.create_grid(True)
     pp(grid)
     game.run()

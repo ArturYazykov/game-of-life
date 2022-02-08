@@ -132,10 +132,12 @@ class GameOfLife:
     def get_next_generation(self):
         for row in grid:
             for cell in row:
+                cell.next_val = cell.val
                 count_live_neighbors = cell.count_live_neighbors()
                 if cell.val == 1:
                     if count_live_neighbors < 2 or count_live_neighbors > 3:
                         cell.next_val = 0
+
                 else:
                     if count_live_neighbors == 3:
                         cell.next_val = 1

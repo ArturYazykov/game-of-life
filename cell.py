@@ -39,8 +39,8 @@ class Cell:
         ]
 
         for cell in grid:
-                if cell.pos in neighbours_coords:
-                    self.neighbours.append(cell)
+            if cell.pos in neighbours_coords:
+                self.neighbours.append(cell)
 
     def count_live_neighbors(self) -> int:
         count = 0
@@ -48,13 +48,6 @@ class Cell:
             if cell.val == 1:
                 count += 1
         return count
-
-    def get_dead_neighbours(self) -> list:
-        dead_neighbours = []
-        for cell in self.neighbours:
-            if cell.val == 0:
-                dead_neighbours.append(cell)
-        return dead_neighbours
 
     def __str__(self) -> str:
         return f"{self.val}=({self.x}, {self.y})"

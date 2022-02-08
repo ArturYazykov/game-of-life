@@ -1,10 +1,9 @@
 import random
-from datetime import datetime
-
 import pygame
 from pygame.locals import *
-
 from cell import Cell
+from utils import _time
+from pprint import pprint as pp
 
 
 class GameOfLife:
@@ -73,8 +72,9 @@ class GameOfLife:
         # TODO
         pass
 
+    # 13.806975
+    @_time
     def create_grid(self, randomize: bool = False) -> list:
-        start = datetime.now()
         # Create greed
         grid = []
         for y in range(0, self.cell_height):
@@ -89,9 +89,6 @@ class GameOfLife:
         for cell in grid:
             cell.find_neighbours(grid)
 
-        # 13.806975
-        delta = datetime.now() - start
-        print(delta)
         return grid
 
     def draw_grid(self):
@@ -132,9 +129,9 @@ if __name__ == '__main__':
     # Seed: 1526
     # Seed: 1730
     # Seed: 1001
-    seed = random.randint(1000, 2000)
+    seed = random.randint(0, 100)
     random.seed(seed)
     game = GameOfLife(1280, 740, 10, 10)
-    grid = game.create_grid(randomize=True)
+    grid = game.create_grid(True)
     # pp(grid)
     game.run()

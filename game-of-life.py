@@ -24,11 +24,11 @@ class GameOfLife:
 
     def draw_lines(self) -> None:
         for x in range(0, self.width + self.cell_size, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color('black'),
+            pygame.draw.line(self.screen, pygame.Color(30, 30, 30),
                              (x, 0), (x, self.height))
 
         for y in range(0, self.height + self.cell_size, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color('black'),
+            pygame.draw.line(self.screen, pygame.Color(30, 30, 30),
                              (0, y), (self.width, y))
 
     def run(self):
@@ -54,9 +54,9 @@ class GameOfLife:
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.check_mouse_button_event(False)
 
+            self.draw_grid()
+            self.draw_lines()
             if not self.pause:
-                self.draw_grid()
-                self.draw_lines()
                 self.get_next_generation()
 
             pygame.display.flip()
@@ -76,8 +76,12 @@ class GameOfLife:
             self._check_cell_focus(mouse_pos)
 
     def _check_cell_focus(self, mouse_pos):
-        # TODO
-        pass
+        print(mouse_pos)
+        x = mouse_pos[0] // self.cell_size
+        y = mouse_pos[1] // self.cell_size
+        cell: Cell = grid[y][x]
+        cell.val = 1
+        print(y, x)
 
     # 13.806975
     @_time
@@ -134,7 +138,7 @@ class GameOfLife:
                 else:
                     count_empty += 1
 
-        print(f"Seed: {seed} Generation: {0} Live: {count_live} Empty: {count_empty}")
+        # print(f"Seed: {seed} Generation: {0} Live: {count_live} Empty: {count_empty}")
 
 
 if __name__ == '__main__':
@@ -145,6 +149,6 @@ if __name__ == '__main__':
     seed = random.randint(0, 100)
     random.seed(seed)
     game = GameOfLife(1280, 740, 20, 7)
-    grid = game.create_grid(True)
-    pp(grid)
+    grid = game.create_grid(False)
+    # pp(grid)
     game.run()

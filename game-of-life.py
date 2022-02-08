@@ -78,48 +78,54 @@ class GameOfLife:
         # Create greed
         grid = []
         for y in range(0, self.cell_height):
+            row = []
             for x in range(0, self.cell_width):
                 if randomize:
                     value = random.randint(0, 1)
                 else:
                     value = 0
-                grid.append(Cell(value, x, y, self.cell_width, self.cell_height))
+                row.append(Cell(value, x, y, self.cell_width, self.cell_height))
+            grid.append(row)
 
         # Find neighbours for all cells
-        for cell in grid:
-            cell.find_neighbours(grid)
+        for row in grid:
+            for cell in row:
+                cell.find_neighbours(grid)
 
         return grid
 
     def draw_grid(self):
-        for cell in grid:
-            if cell.val == 1:
-                color = pygame.Color(0, 150, 0)
-            else:
-                color = pygame.Color(255, 255, 255)
-            x = cell.x * self.cell_size
-            y = cell.y * self.cell_size
-            pygame.draw.rect(self.screen, color,
-                             (x, y, self.cell_size, self.cell_size))
+        for row in grid:
+            for cell in row:
+                if cell.val == 1:
+                    color = pygame.Color(0, 150, 0)
+                else:
+                    color = pygame.Color(255, 255, 255)
+                x = cell.x * self.cell_size
+                y = cell.y * self.cell_size
+                pygame.draw.rect(self.screen, color,
+                                 (x, y, self.cell_size, self.cell_size))
 
     def get_next_generation(self):
-        for cell in grid:
-            count_live_neighbors = cell.count_live_neighbors()
-            if cell.val == 1:
-                if count_live_neighbors < 2 or count_live_neighbors > 3:
-                    cell.next_val = 0
-            else:
-                if count_live_neighbors == 3:
-                    cell.next_val = 1
+        for row in grid:
+            for cell in row:
+                count_live_neighbors = cell.count_live_neighbors()
+                if cell.val == 1:
+                    if count_live_neighbors < 2 or count_live_neighbors > 3:
+                        cell.next_val = 0
+                else:
+                    if count_live_neighbors == 3:
+                        cell.next_val = 1
 
         count_live = 0
         count_empty = 0
-        for cell in grid:
-            cell.val = cell.next_val
-            if cell.val == 1:
-                count_live += 1
-            else:
-                count_empty += 1
+        for row in grid:
+            for cell in row:
+                cell.val = cell.next_val
+                if cell.val == 1:
+                    count_live += 1
+                else:
+                    count_empty += 1
 
         print(f"Seed: {seed} Generation: {0} Live: {count_live} Empty: {count_empty}")
 
@@ -131,7 +137,7 @@ if __name__ == '__main__':
     # Seed: 1001
     seed = random.randint(0, 100)
     random.seed(seed)
-    game = GameOfLife(1280, 740, 10, 10)
+    game = GameOfLife(320, 240, 40, 10)
     grid = game.create_grid(True)
-    # pp(grid)
+    pp(grid)
     game.run()

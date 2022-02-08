@@ -37,10 +37,10 @@ class Cell:
             self.calculate_neighbors_pos(x - 1, y + 1),  # 7
             self.calculate_neighbors_pos(x - 1, y)  # 8
         ]
-
-        for cell in grid:
-            if cell.pos in neighbours_coords:
-                self.neighbours.append(cell)
+        for row in grid:
+            for cell in row:
+                if cell.pos in neighbours_coords:
+                    self.neighbours.append(cell)
 
     def count_live_neighbors(self) -> int:
         count = 0

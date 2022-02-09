@@ -4,6 +4,7 @@ from enum import Enum
 import pygame
 from pygame.locals import *
 from cell import Cell
+from info import GameInfo
 from utils import _time
 from pprint import pprint as pp
 
@@ -26,17 +27,26 @@ class GameOfLife:
         self.cell_width = self.width // self.cell_size
         self.cell_height = self.height // self.cell_size
 
+        self.seed = None
+        self.update_seed()
+
+        self.info: GameInfo
+
         self.speed = speed
         self.mouse_state = MouseBTnState.NOTHING
         self.pause = False
 
+    def update_seed(self):
+        self.seed = random.randint(0, 999999)
+        random.seed(self.seed)
+
     def draw_lines(self) -> None:
         for x in range(0, self.width + self.cell_size, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color(30, 30, 30),
+            pygame.draw.line(self.screen, pygame.Color(200, 200, 200),
                              (x, 0), (x, self.height))
 
         for y in range(0, self.height + self.cell_size, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color(30, 30, 30),
+            pygame.draw.line(self.screen, pygame.Color(200, 200, 200),
                              (0, y), (self.width, y))
 
     def run(self):
@@ -44,6 +54,7 @@ class GameOfLife:
         clock = pygame.time.Clock()
         pygame.display.set_caption('Game of Life')
         self.screen.fill(pygame.Color('white'))
+        self.info = GameInfo(self.screen)
 
         running = True
         while running:
@@ -53,8 +64,14 @@ class GameOfLife:
                 elif event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         running = False
+                    elif event.key == K_BACKQUOTE:
+                        self.info.toggle()
                     elif event.key == K_SPACE:
                         self.pause = not self.pause
+                    elif event.key == pygame.K_r:
+                        self.random_all_cell()
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.clear_all_cell()
                 elif event.type == pygame.MOUSEMOTION:
                     self.check_mouse_motion_event(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -65,12 +82,26 @@ class GameOfLife:
             self.draw_grid()
             self.draw_lines()
             if not self.pause:
-                self.get_next_generation()
+                self.next_generation()
+            if self.info.is_visible:
+                self.update_info()
+                self.info.draw()
 
             pygame.display.flip()
             clock.tick(self.speed)
 
         pygame.quit()
+
+    def random_all_cell(self):
+        self.update_seed()
+        for row in grid:
+            for cell in row:
+                cell.val = random.randint(0, 1)
+
+    def clear_all_cell(self):
+        for row in grid:
+            for cell in row:
+                cell.val = 0
 
     def check_mouse_motion_event(self, event):
         if self.mouse_state != MouseBTnState.NOTHING:
@@ -129,7 +160,7 @@ class GameOfLife:
                 pygame.draw.rect(self.screen, color,
                                  (x, y, self.cell_size, self.cell_size))
 
-    def get_next_generation(self):
+    def next_generation(self):
         for row in grid:
             for cell in row:
                 cell.next_val = cell.val
@@ -137,32 +168,31 @@ class GameOfLife:
                 if cell.val == 1:
                     if count_live_neighbors < 2 or count_live_neighbors > 3:
                         cell.next_val = 0
-
                 else:
                     if count_live_neighbors == 3:
                         cell.next_val = 1
 
+        for row in grid:
+            for cell in row:
+                cell.val = cell.next_val
+
+    def update_info(self):
         count_live = 0
         count_empty = 0
         for row in grid:
             for cell in row:
-                cell.val = cell.next_val
                 if cell.val == 1:
                     count_live += 1
                 else:
                     count_empty += 1
 
-        # print(f"Seed: {seed} Generation: {0} Live: {count_live} Empty: {count_empty}")
+        self.info.update([
+            f"Seed: {self.seed}   Filled: {count_live}    Empty: {count_empty}",
+            f"Pouse: {'On' if self.pause else 'Off'}"
+        ])
 
 
 if __name__ == '__main__':
-    # Seed: 153
-    # Seed: 1526
-    # Seed: 1730
-    # Seed: 1001
-    seed = random.randint(0, 100)
-    random.seed(seed)
-    game = GameOfLife(1280, 740, 20, 7)
+    game = GameOfLife(1280, 740, 10, 10)
     grid = game.create_grid(False)
-    # pp(grid)
     game.run()

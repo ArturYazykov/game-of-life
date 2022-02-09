@@ -9,10 +9,9 @@ class Cell:
         self.y = y
         self.w = w
         self.h = h
-        self.pos = (x, y)
         self.neighbours = []
 
-    def get_neighbors(self, x: int, y: int, grid: list):
+    def get_neighbor(self, x: int, y: int, grid: list):
         if x < 0:
             x = self.w - 1
         if x > self.w - 1:
@@ -28,14 +27,14 @@ class Cell:
     def find_neighbours(self, grid: list):
         x, y = self.x, self.y
         self.neighbours = [
-            self.get_neighbors(x - 1, y - 1, grid),  # 1
-            self.get_neighbors(x, y - 1, grid),  # 2
-            self.get_neighbors(x + 1, y - 1, grid),  # 3
-            self.get_neighbors(x + 1, y, grid),  # 4
-            self.get_neighbors(x + 1, y + 1, grid),  # 5
-            self.get_neighbors(x, y + 1, grid),  # 6
-            self.get_neighbors(x - 1, y + 1, grid),  # 7
-            self.get_neighbors(x - 1, y, grid)  # 8
+            self.get_neighbor(x - 1, y - 1, grid),  # 1
+            self.get_neighbor(x, y - 1, grid),  # 2
+            self.get_neighbor(x + 1, y - 1, grid),  # 3
+            self.get_neighbor(x + 1, y, grid),  # 4
+            self.get_neighbor(x + 1, y + 1, grid),  # 5
+            self.get_neighbor(x, y + 1, grid),  # 6
+            self.get_neighbor(x - 1, y + 1, grid),  # 7
+            self.get_neighbor(x - 1, y, grid)  # 8
         ]
 
     def count_live_neighbors(self) -> int:

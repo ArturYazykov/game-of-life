@@ -3,10 +3,10 @@ from enum import Enum
 
 import pygame
 from pygame.locals import *
+
 from cell import Cell
 from info import GameInfo
 from utils import _time
-from pprint import pprint as pp
 
 
 class MouseBTnState(Enum):
@@ -126,7 +126,6 @@ class GameOfLife:
             cell.val = 0
         print(y, x)
 
-    # 13.806975
     @_time
     def create_grid(self, randomize: bool = False) -> list:
         # Create greed

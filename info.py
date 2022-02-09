@@ -23,9 +23,9 @@ class GameInfo:
             "   SPACE - Pause",
             "   BACKSPACE - Clear greed",
             "   R - Generate random greed",
-            "Working only in Pause(SPACE) mode!",
-            "   LEFT Mouse Button - Fills a cell",
-            "   RIGHT Mouse Button - Clears a cell",
+            "You can use Pause for more convenience",
+            "   LEFT Mouse button - Fills a cell",
+            "   RIGHT Mouse button - Clears a cell",
             ""
         ]
 

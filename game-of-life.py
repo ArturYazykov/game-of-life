@@ -34,27 +34,27 @@ class GameOfLife:
 
         self.speed = speed
         self.mouse_state = MouseBTnState.NOTHING
-        self.pause = False
+        self.pause = True
 
     def update_seed(self):
         self.seed = random.randint(0, 999999)
         random.seed(self.seed)
 
     def draw_lines(self) -> None:
+        color = pygame.Color(220, 220, 220)
+
         for x in range(0, self.width + self.cell_size, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color(200, 200, 200),
-                             (x, 0), (x, self.height))
+            pygame.draw.line(self.screen, color, (x, 0), (x, self.height))
 
         for y in range(0, self.height + self.cell_size, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color(200, 200, 200),
-                             (0, y), (self.width, y))
+            pygame.draw.line(self.screen, color, (0, y), (self.width, y))
 
     def run(self):
         pygame.init()
         clock = pygame.time.Clock()
         pygame.display.set_caption('Game of Life')
         self.screen.fill(pygame.Color('white'))
-        self.info = GameInfo(self.screen)
+        self.info = GameInfo(self.screen, True)
 
         running = True
         while running:
@@ -83,7 +83,7 @@ class GameOfLife:
             self.draw_lines()
             if not self.pause:
                 self.next_generation()
-            if self.info.is_visible:
+            if self.info.visible:
                 self.update_info()
                 self.info.draw()
 
@@ -115,7 +115,6 @@ class GameOfLife:
             self._check_cell_focus(mouse_pos)
 
     def _check_cell_focus(self, mouse_pos):
-        print(mouse_pos)
         x = mouse_pos[0] // self.cell_size
         y = mouse_pos[1] // self.cell_size
         cell: Cell = grid[y][x]
@@ -124,7 +123,6 @@ class GameOfLife:
             cell.val = 1
         if self.mouse_state == MouseBTnState.RIGHT_BTN.value:
             cell.val = 0
-        print(y, x)
 
     @_time
     def create_grid(self, randomize: bool = False) -> list:
@@ -186,7 +184,9 @@ class GameOfLife:
                     count_empty += 1
 
         self.info.update([
-            f"Seed: {self.seed}   Filled: {count_live}    Empty: {count_empty}",
+            f"Seed: {self.seed}",
+            f"Filled: {count_live}",
+            f"Empty: {count_empty}",
             f"Pouse: {'On' if self.pause else 'Off'}"
         ])
 

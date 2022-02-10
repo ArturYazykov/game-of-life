@@ -18,23 +18,28 @@ class MouseBTnState(Enum):
 class GameOfLife:
 
     def __init__(self, width: int = 640, height: int = 480, cell_size: int = 10, speed: int = 10) -> None:
+        self.default_width = width
+        self.default_height = height
+        self.cell_size = cell_size
+
         self.width = width
         self.height = height
-        self.cell_size = cell_size
-        self.screen_size = width, height
-        self.screen = pygame.display.set_mode(self.screen_size)
-
         self.cell_width = self.width // self.cell_size
         self.cell_height = self.height // self.cell_size
+        self.screen = pygame.display.set_mode((self.width, self.height))
 
         self.seed = None
         self.update_seed()
 
         self.info: GameInfo
 
-        self.speed = speed
         self.mouse_state = MouseBTnState.NOTHING
+        self.full_screen = False
         self.pause = True
+        self.speed = speed
+        self.create_on = 3
+        self.remove_from = 2
+        self.remove_to = 3
 
     def update_seed(self):
         self.seed = random.randint(0, 999999)
@@ -72,6 +77,46 @@ class GameOfLife:
                         self.random_all_cell()
                     elif event.key == pygame.K_BACKSPACE:
                         self.clear_all_cell()
+                    # Full screen
+                    elif event.key == pygame.K_f:
+                        self.full_screen = not self.full_screen
+                        if self.full_screen:
+                            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                            display_info = pygame.display.Info()
+                            self.width = display_info.current_w
+                            self.height = display_info.current_h
+                            self.cell_width = self.width // self.cell_size
+                            self.cell_height = self.height // self.cell_size
+                        else:
+                            self.width = self.default_width
+                            self.height = self.default_height
+                            self.cell_width = self.width // self.cell_size
+                            self.cell_height = self.height // self.cell_size
+                            self.screen = pygame.display.set_mode((self.width, self.height))
+                        # Recreate grid
+                        global grid
+                        grid = self.create_grid(False)
+                    # Create Cell
+                    elif event.key == pygame.K_a and self.create_on > 1:
+                        self.create_on -= 1
+                    elif event.key == pygame.K_q and self.create_on < 8:
+                        self.create_on += 1
+                    # Remove Cell from
+                    elif event.key == pygame.K_s and self.remove_from > 0:
+                        self.remove_from -= 1
+                    elif event.key == pygame.K_w and self.remove_from < 8 and self.remove_from < self.remove_to:
+                        self.remove_from += 1
+                    # Remove Cell to
+                    elif event.key == pygame.K_d and self.remove_to > 1 and self.remove_from < self.remove_to:
+                        self.remove_to -= 1
+                    elif event.key == pygame.K_e and self.remove_to < 8:
+                        self.remove_to += 1
+                    # Speed
+                    elif event.key == pygame.K_MINUS and self.speed > 1:
+                        self.speed -= 1
+                    elif event.key == pygame.K_EQUALS and self.speed < 60:
+                        self.speed += 1
+
                 elif event.type == pygame.MOUSEMOTION:
                     self.check_mouse_motion_event(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -162,12 +207,14 @@ class GameOfLife:
             for cell in row:
                 cell.next_val = cell.val
                 count_live_neighbors = cell.count_live_neighbors()
-                if cell.val == 1:
-                    if count_live_neighbors < 2 or count_live_neighbors > 3:
-                        cell.next_val = 0
-                else:
-                    if count_live_neighbors == 3:
+                if cell.val == 0:
+                    # B
+                    if count_live_neighbors == self.create_on:
                         cell.next_val = 1
+                else:
+                    # S
+                    if count_live_neighbors < self.remove_from or count_live_neighbors > self.remove_to:
+                        cell.next_val = 0
 
         for row in grid:
             for cell in row:
@@ -184,14 +231,17 @@ class GameOfLife:
                     count_empty += 1
 
         self.info.update([
-            f"Seed: {self.seed}",
-            f"Filled: {count_live}",
             f"Empty: {count_empty}",
-            f"Pouse: {'On' if self.pause else 'Off'}"
+            f"Filled: {count_live}",
+            ""
+            f"Speed: {self.speed}",
+            f"Create: {self.create_on}",
+            f"Remove: [{self.remove_from}, {self.remove_to}]",
+            f"Pause: {'On' if self.pause else 'Off'}"
         ])
 
 
 if __name__ == '__main__':
-    game = GameOfLife(1280, 740, 10, 10)
+    game = GameOfLife(1280, 720, 5, 10)
     grid = game.create_grid(False)
     game.run()

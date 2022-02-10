@@ -21,12 +21,7 @@ class GameOfLife:
         self.default_width = width
         self.default_height = height
         self.cell_size = cell_size
-
-        self.width = width
-        self.height = height
-        self.cell_width = self.width // self.cell_size
-        self.cell_height = self.height // self.cell_size
-        self.screen = pygame.display.set_mode((self.width, self.height))
+        self._window_mode()
 
         self.seed = None
         self.update_seed()
@@ -40,6 +35,21 @@ class GameOfLife:
         self.create_on = 3
         self.remove_from = 2
         self.remove_to = 3
+
+    def _window_mode(self):
+        self.width = self.default_width
+        self.height = self.default_height
+        self.cell_width = self.width // self.cell_size
+        self.cell_height = self.height // self.cell_size
+        self.screen = pygame.display.set_mode((self.width, self.height))
+
+    def _full_screen_mode(self):
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        display_info = pygame.display.Info()
+        self.width = display_info.current_w
+        self.height = display_info.current_h
+        self.cell_width = self.width // self.cell_size
+        self.cell_height = self.height // self.cell_size
 
     def update_seed(self):
         self.seed = random.randint(0, 999999)
@@ -81,18 +91,9 @@ class GameOfLife:
                     elif event.key == pygame.K_f:
                         self.full_screen = not self.full_screen
                         if self.full_screen:
-                            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-                            display_info = pygame.display.Info()
-                            self.width = display_info.current_w
-                            self.height = display_info.current_h
-                            self.cell_width = self.width // self.cell_size
-                            self.cell_height = self.height // self.cell_size
+                            self._full_screen_mode()
                         else:
-                            self.width = self.default_width
-                            self.height = self.default_height
-                            self.cell_width = self.width // self.cell_size
-                            self.cell_height = self.height // self.cell_size
-                            self.screen = pygame.display.set_mode((self.width, self.height))
+                            self._window_mode()
                         # Recreate grid
                         global grid
                         grid = self.create_grid(False)
